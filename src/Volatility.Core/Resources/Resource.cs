@@ -263,6 +263,7 @@ public enum Platform
     TUB = 1,
     X360 = 2,
     PS3 = 3,
+    Decomp = 4,
 }
 
 public enum Unpacker

@@ -232,7 +232,7 @@ public static class DDSTextureUtilities
     {
         return texture switch
         {
-            TexturePC pc => CreateWriteConfiguration(pc, bitmapData),
+            TextureD3D9Base d3d9 => CreateWriteConfiguration(d3d9, bitmapData),
             TextureBPR bpr => CreateWriteConfiguration(bpr),
             TexturePS3 ps3 => CreateWriteConfiguration(ps3, bitmapData),
             TextureX360 x360 => CreateWriteConfiguration(x360, bitmapData),
@@ -240,7 +240,7 @@ public static class DDSTextureUtilities
         };
     }
 
-    private static DDSWriteConfiguration CreateWriteConfiguration(TexturePC texture, byte[] bitmapData)
+    private static DDSWriteConfiguration CreateWriteConfiguration(TextureD3D9Base texture, byte[] bitmapData)
     {
         return texture.Format switch
         {
@@ -253,7 +253,7 @@ public static class DDSTextureUtilities
             D3DFORMAT.D3DFMT_R5G6B5 => DDSWriteConfiguration.Rgb(16, 0xF800u, 0x07E0u, 0x001Fu, 0u),
             D3DFORMAT.D3DFMT_A1R5G5B5 => DDSWriteConfiguration.RgbAlpha(16, 0x7C00u, 0x03E0u, 0x001Fu, 0x8000u),
             D3DFORMAT.D3DFMT_A4R4G4B4 => DDSWriteConfiguration.RgbAlpha(16, 0x0F00u, 0x00F0u, 0x000Fu, 0xF000u),
-            _ => throw new NotSupportedException($"DDS export is not supported for TUB texture format '{texture.Format}'."),
+            _ => throw new NotSupportedException($"DDS export is not supported for D3D9 texture format '{texture.Format}'."),
         };
     }
 

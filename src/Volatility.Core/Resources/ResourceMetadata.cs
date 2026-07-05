@@ -11,7 +11,8 @@ public enum RegistrationPlatforms
     TUB = 1 << 1,
     X360 = 1 << 2,
     PS3 = 1 << 3,
-    Agnostic = 1 << 4,
+    Decomp = 1 << 4,
+    Agnostic = 1 << 5,
     All = BPR | TUB | X360 | PS3,
 }
 

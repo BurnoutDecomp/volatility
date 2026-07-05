@@ -13,7 +13,7 @@ internal class PortTextureCommand : ICommand
 
     public static string CommandToken => "PortTexture";
     public static string CommandDescription => "Ports texture data from a given source format to the specified destination format.";
-    public static string CommandParameters => "[--verbose] [--usegtf] --informat=<tub,bpr[x64],x360,ps3> --inpath=<file/folder path> --outformat=<tub,bpr[x64],x360,ps3> [--outpath=<file/folder path>]";
+    public static string CommandParameters => "[--verbose] [--usegtf] --informat=<tub,bpr[x64],x360,ps3,decomp> --inpath=<file/folder path> --outformat=<tub,bpr[x64],x360,ps3,decomp> [--outpath=<file/folder path>]";
 
     public string? SourceFormat { get; set; }
     public string? SourcePath { get; set; }

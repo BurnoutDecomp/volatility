@@ -250,6 +250,7 @@ internal sealed class PortTextureOperation(
             "TUB" => Platform.TUB,
             "X360" => Platform.X360,
             "PS3" => Platform.PS3,
+            "DECOMP" => Platform.Decomp,
             _ => throw new InvalidPlatformException(),
         };
 

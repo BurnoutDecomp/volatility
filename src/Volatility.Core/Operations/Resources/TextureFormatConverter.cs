@@ -180,22 +180,6 @@ public static class TextureFormatConverter
                 sourceFormatIndex = (int)bprsrc.Format;
                 destinationFormatIndex = sourceFormatIndex;
                 break;
-            case (TexturePC tub, TextureBPR bpr):
-                TUBtoBPRMapping.TryGetValue(tub.Format, out DXGI_FORMAT tubbprFormat);
-                bpr.Format = tubbprFormat;
-                sourceFormatIndex = (int)tub.Format;
-                destinationFormatIndex = (int)tubbprFormat;
-                if (tubbprFormat == DXGI_FORMAT.DXGI_FORMAT_UNKNOWN)
-                    warningLogger($"Destination texture format is {tubbprFormat}! (Source is {tub.Format})");
-                break;
-            case (TextureBPR bpr, TexturePC tub):
-                BPRtoTUBMapping.TryGetValue(bpr.Format, out D3DFORMAT bprtubFormat);
-                tub.Format = bprtubFormat;
-                sourceFormatIndex = (int)bpr.Format;
-                destinationFormatIndex = (int)bprtubFormat;
-                if (bprtubFormat == D3DFORMAT.D3DFMT_UNKNOWN)
-                    warningLogger($"Destination texture format is {bprtubFormat}! (Source is {bpr.Format})");
-                break;
             case (TexturePS3 ps3, TextureBPR bpr):
                 PS3toBPRMapping.TryGetValue(ps3.Format, out DXGI_FORMAT ps3bprFormat);
                 bpr.Format = ps3bprFormat;
@@ -204,24 +188,6 @@ public static class TextureFormatConverter
                 destinationFormatIndex = (int)ps3bprFormat;
                 if (ps3bprFormat == DXGI_FORMAT.DXGI_FORMAT_UNKNOWN)
                     warningLogger($"Destination texture format is {ps3bprFormat}! (Source is {ps3.Format})");
-                break;
-            case (TexturePS3 ps3, TexturePC tub):
-                PS3toTUBMapping.TryGetValue(ps3.Format, out D3DFORMAT ps3tubFormat);
-                tub.Format = ps3tubFormat;
-                flipEndian = true;
-                sourceFormatIndex = (int)ps3.Format;
-                destinationFormatIndex = (int)ps3tubFormat;
-                if (ps3tubFormat == D3DFORMAT.D3DFMT_UNKNOWN)
-                    warningLogger($"Destination texture format is {ps3tubFormat}! (Source is {ps3.Format})");
-                break;
-            case (TextureX360 x360, TexturePC tub):
-                X360toTUBMapping.TryGetValue(x360.Format.DataFormat, out D3DFORMAT x360tubFormat);
-                tub.Format = x360tubFormat;
-                flipEndian = true;
-                sourceFormatIndex = (int)x360.Format.DataFormat;
-                destinationFormatIndex = (int)x360tubFormat;
-                if (x360tubFormat == D3DFORMAT.D3DFMT_UNKNOWN)
-                    warningLogger($"Destination texture format is {x360tubFormat}! (Source is {x360.Format.DataFormat})");
                 break;
             case (TextureX360 x360, TextureBPR bpr):
                 X360toBPRMapping.TryGetValue(x360.Format.DataFormat, out DXGI_FORMAT x360bprFormat);
@@ -232,15 +198,6 @@ public static class TextureFormatConverter
                 if (x360bprFormat == DXGI_FORMAT.DXGI_FORMAT_UNKNOWN)
                     warningLogger($"Destination texture format is {x360bprFormat}! (Source is {x360.Format.DataFormat})");
                 break;
-            case (TexturePC tub, TextureX360 x360):
-                TUBtoX360Mapping.TryGetValue(tub.Format, out GPUTEXTUREFORMAT tubx360Format);
-                x360.Format.DataFormat = tubx360Format;
-                flipEndian = true;
-                sourceFormatIndex = (int)tub.Format;
-                destinationFormatIndex = (int)tubx360Format;
-                if (tubx360Format == GPUTEXTUREFORMAT.GPUTEXTUREFORMAT_1_REVERSE)
-                    warningLogger($"Destination texture format is {tubx360Format}! (Source is {tub.Format})");
-                break;
             case (TextureBPR bpr, TexturePS3 ps3):
                 BPRtoPS3Mapping.TryGetValue(bpr.Format, out CELL_GCM_COLOR_FORMAT bprps3format);
                 ps3.Format = bprps3format;
@@ -250,15 +207,6 @@ public static class TextureFormatConverter
                 if (bprps3format == CELL_GCM_COLOR_FORMAT.CELL_GCM_TEXTURE_INVALID)
                     warningLogger($"Destination texture format is {bprps3format}! (Source is {bpr.Format})");
                 break;
-            case (TexturePC tub, TexturePS3 ps3):
-                TUBtoPS3Mapping.TryGetValue(tub.Format, out CELL_GCM_COLOR_FORMAT tubps3Format);
-                ps3.Format = tubps3Format;
-                flipEndian = true;
-                sourceFormatIndex = (int)tub.Format;
-                destinationFormatIndex = (int)tubps3Format;
-                if (tubps3Format == CELL_GCM_COLOR_FORMAT.CELL_GCM_TEXTURE_INVALID)
-                    warningLogger($"Destination texture format is {tubps3Format}! (Source is {tub.Format})");
-                break;
             case (TextureBPR bpr, TextureX360 x360):
                 BPRtoX360Mapping.TryGetValue(bpr.Format, out GPUTEXTUREFORMAT bprx360Format);
                 x360.Format.DataFormat = bprx360Format;
@@ -267,6 +215,73 @@ public static class TextureFormatConverter
                 destinationFormatIndex = (int)bprx360Format;
                 if (bprx360Format == GPUTEXTUREFORMAT.GPUTEXTUREFORMAT_1_REVERSE)
                     warningLogger($"Destination texture format is {bprx360Format}! (Source is {bpr.Format})");
+                break;
+            // D3D9 (TUB + Decomp)
+            case (TexturePC tub, TextureDecomp decomp):
+                decomp.Format = tub.Format;
+                sourceFormatIndex = (int)tub.Format;
+                destinationFormatIndex = (int)tub.Format;
+                break;
+            case (TextureDecomp decomp, TexturePC tub):
+                tub.Format = decomp.Format;
+                sourceFormatIndex = (int)decomp.Format;
+                destinationFormatIndex = (int)decomp.Format;
+                break;
+
+            // D3D9 -> other platforms
+            case (TextureD3D9Base d3d9, TextureBPR bpr):
+                TUBtoBPRMapping.TryGetValue(d3d9.Format, out DXGI_FORMAT d3d9bprFormat);
+                bpr.Format = d3d9bprFormat;
+                sourceFormatIndex = (int)d3d9.Format;
+                destinationFormatIndex = (int)d3d9bprFormat;
+                if (d3d9bprFormat == DXGI_FORMAT.DXGI_FORMAT_UNKNOWN)
+                    warningLogger($"Destination texture format is {d3d9bprFormat}! (Source is {d3d9.Format})");
+                break;
+            case (TextureD3D9Base d3d9, TextureX360 x360):
+                TUBtoX360Mapping.TryGetValue(d3d9.Format, out GPUTEXTUREFORMAT d3d9x360Format);
+                x360.Format.DataFormat = d3d9x360Format;
+                flipEndian = true;
+                sourceFormatIndex = (int)d3d9.Format;
+                destinationFormatIndex = (int)d3d9x360Format;
+                if (d3d9x360Format == GPUTEXTUREFORMAT.GPUTEXTUREFORMAT_1_REVERSE)
+                    warningLogger($"Destination texture format is {d3d9x360Format}! (Source is {d3d9.Format})");
+                break;
+            case (TextureD3D9Base d3d9, TexturePS3 ps3):
+                TUBtoPS3Mapping.TryGetValue(d3d9.Format, out CELL_GCM_COLOR_FORMAT d3d9ps3Format);
+                ps3.Format = d3d9ps3Format;
+                flipEndian = true;
+                sourceFormatIndex = (int)d3d9.Format;
+                destinationFormatIndex = (int)d3d9ps3Format;
+                if (d3d9ps3Format == CELL_GCM_COLOR_FORMAT.CELL_GCM_TEXTURE_INVALID)
+                    warningLogger($"Destination texture format is {d3d9ps3Format}! (Source is {d3d9.Format})");
+                break;
+
+            // other platforms -> D3D9
+            case (TextureX360 x360, TextureD3D9Base d3d9):
+                X360toTUBMapping.TryGetValue(x360.Format.DataFormat, out D3DFORMAT x360d3d9Format);
+                d3d9.Format = x360d3d9Format;
+                flipEndian = true;
+                sourceFormatIndex = (int)x360.Format.DataFormat;
+                destinationFormatIndex = (int)x360d3d9Format;
+                if (x360d3d9Format == D3DFORMAT.D3DFMT_UNKNOWN)
+                    warningLogger($"Destination texture format is {x360d3d9Format}! (Source is {x360.Format.DataFormat})");
+                break;
+            case (TexturePS3 ps3, TextureD3D9Base d3d9):
+                PS3toTUBMapping.TryGetValue(ps3.Format, out D3DFORMAT ps3d3d9Format);
+                d3d9.Format = ps3d3d9Format;
+                flipEndian = true;
+                sourceFormatIndex = (int)ps3.Format;
+                destinationFormatIndex = (int)ps3d3d9Format;
+                if (ps3d3d9Format == D3DFORMAT.D3DFMT_UNKNOWN)
+                    warningLogger($"Destination texture format is {ps3d3d9Format}! (Source is {ps3.Format})");
+                break;
+            case (TextureBPR bpr, TextureD3D9Base d3d9):
+                BPRtoTUBMapping.TryGetValue(bpr.Format, out D3DFORMAT bprd3d9Format);
+                d3d9.Format = bprd3d9Format;
+                sourceFormatIndex = (int)bpr.Format;
+                destinationFormatIndex = (int)bprd3d9Format;
+                if (bprd3d9Format == D3DFORMAT.D3DFMT_UNKNOWN)
+                    warningLogger($"Destination texture format is {bprd3d9Format}! (Source is {bpr.Format})");
                 break;
             default:
                 throw new NotImplementedException($"Conversion technique {localSourceFormat} > {localDestinationFormat} is not yet implemented.");
@@ -294,15 +309,16 @@ public static class TextureFormatConverter
                 }
                 bitmap = Array.Empty<byte>();
                 return false;
-            case (TexturePS3 ps3, TexturePC tub):
+            // D3D9-family (TUB TexturePC + Decomp) share the same D3DFORMAT-keyed bitmap paths.
+            case (TexturePS3 ps3, TextureD3D9Base d3d9):
                 if (ps3.Format == CELL_GCM_COLOR_FORMAT.CELL_GCM_TEXTURE_A8R8G8B8)
                 {
-                    if (tub.Format == D3DFORMAT.D3DFMT_A8R8G8B8)
+                    if (d3d9.Format == D3DFORMAT.D3DFMT_A8R8G8B8)
                     {
                         break;
                     }
 
-                    if (tub.Format == D3DFORMAT.D3DFMT_A8B8G8R8)
+                    if (d3d9.Format == D3DFORMAT.D3DFMT_A8B8G8R8)
                     {
                         DDSTextureUtilities.A8R8G8B8toA8B8G8R8(bitmap, ps3.Width, ps3.Height, ps3.MipmapLevels);
                         break;
@@ -318,11 +334,11 @@ public static class TextureFormatConverter
                 }
                 bitmap = Array.Empty<byte>();
                 return false;
-            case (TexturePC tub, TextureBPR bpr):
-                if (tub.Format == D3DFORMAT.D3DFMT_A8R8G8B8
+            case (TextureD3D9Base d3d9, TextureBPR bpr):
+                if (d3d9.Format == D3DFORMAT.D3DFMT_A8R8G8B8
                 && bpr.Format == DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM)
                     DDSTextureUtilities.A8R8G8B8toB8G8R8A8(bitmap, destTexture.Width, destTexture.Height, destTexture.MipmapLevels);
-                if (tub.Format == D3DFORMAT.D3DFMT_A8B8G8R8
+                if (d3d9.Format == D3DFORMAT.D3DFMT_A8B8G8R8
                 && bpr.Format == DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM)
                     DDSTextureUtilities.A8B8G8R8toB8G8R8A8(bitmap, destTexture.Width, destTexture.Height, destTexture.MipmapLevels);
                 break;
@@ -345,19 +361,19 @@ public static class TextureFormatConverter
                 }
                 bitmap = Array.Empty<byte>();
                 return false;
-            case (TexturePC tub, TexturePS3 ps3):
+            case (TextureD3D9Base d3d9, TexturePS3 ps3):
                 if (ps3.Format == CELL_GCM_COLOR_FORMAT.CELL_GCM_TEXTURE_A8R8G8B8)
                 {
-                    if (tub.Format == D3DFORMAT.D3DFMT_A8R8G8B8)
+                    if (d3d9.Format == D3DFORMAT.D3DFMT_A8R8G8B8)
                     {
-                        bitmap = PS3TextureUtilities.EncodePS3A8R8G8B8(bitmap, tub.Width, tub.Height, tub.MipmapLevels);
+                        bitmap = PS3TextureUtilities.EncodePS3A8R8G8B8(bitmap, d3d9.Width, d3d9.Height, d3d9.MipmapLevels);
                         break;
                     }
 
-                    if (tub.Format == D3DFORMAT.D3DFMT_A8B8G8R8)
+                    if (d3d9.Format == D3DFORMAT.D3DFMT_A8B8G8R8)
                     {
-                        DDSTextureUtilities.A8B8G8R8toA8R8G8B8(bitmap, tub.Width, tub.Height, tub.MipmapLevels);
-                        bitmap = PS3TextureUtilities.EncodePS3A8R8G8B8(bitmap, tub.Width, tub.Height, tub.MipmapLevels);
+                        DDSTextureUtilities.A8B8G8R8toA8R8G8B8(bitmap, d3d9.Width, d3d9.Height, d3d9.MipmapLevels);
+                        bitmap = PS3TextureUtilities.EncodePS3A8R8G8B8(bitmap, d3d9.Width, d3d9.Height, d3d9.MipmapLevels);
                         break;
                     }
                 }
@@ -372,6 +388,23 @@ public static class TextureFormatConverter
                 }
                 bitmap = Array.Empty<byte>();
                 return false;
+            // --- BP-Decomp (our x64 PC) bitmap conversions; mirror the TUB cases (same D3DFORMAT). ---
+            // X360 -> Decomp: the detiled X360 pixel data is still stored as 16-bit BIG-ENDIAN words
+            // (GPUENDIAN 8in16). Platform-4 (Decomp) bundles are little-endian -- like the LE resource
+            // structures the rest of the port already produces -- so the pixel blob must be byte-swapped
+            // too. For DXT, writing it through un-swapped renders as full-white coverage + colour-shifted
+            // blocks (the X360 DXT byte order read as PC DXT). [This case previously didn't exist; the
+            // blob fell through to default + was written as-is -> the byte-order bug.]
+            case (TextureX360 x360, TextureDecomp decomp):
+                if (decomp.Format is D3DFORMAT.D3DFMT_DXT1 or D3DFORMAT.D3DFMT_DXT3 or D3DFORMAT.D3DFMT_DXT5)
+                {
+                    X360TextureUtilities.SwapEndian8in16(bitmap);
+                    break;
+                }
+                // Uncompressed X360 surfaces: 8bpp (A8) needs no swap; 32bpp ARGB would need an 8in32 +
+                // channel pass -- add when a non-DXT X360 source is actually ported (DXT is what the font
+                // atlas uses). Write the detiled blob as-is for those for now.
+                break;
             default:
                 bitmap = Array.Empty<byte>();
                 return false;

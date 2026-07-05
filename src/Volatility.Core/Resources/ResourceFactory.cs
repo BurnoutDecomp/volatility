@@ -33,6 +33,7 @@ public static class ResourceFactory
         AddRegisteredResource<TexturePC>(registry);
         AddRegisteredResource<TextureX360>(registry);
         AddRegisteredResource<TexturePS3>(registry);
+        AddRegisteredResource<TextureDecomp>(registry);
         AddRegisteredResource<Splicer>(registry);
         AddRegisteredResource<RenderableBPR>(registry);
         AddRegisteredResource<RenderablePC>(registry);
@@ -150,6 +151,11 @@ public static class ResourceFactory
             if ((platforms & RegistrationPlatforms.PS3) != 0)
             {
                 yield return Platform.PS3;
+            }
+
+            if ((platforms & RegistrationPlatforms.Decomp) != 0)
+            {
+                yield return Platform.Decomp;
             }
         }
     }
